@@ -2,7 +2,7 @@
 layout: post
 title:  "The ternary operator in C"
 date:   2013-07-24 12:58:00
-categories: c tip gcc clang
+categories: clang
 ---
 
 Most programmers are familiar with the ternary operator [?:](http://en.wikipedia.org/wiki/%3F:#C) that is available in C and most other languages.
