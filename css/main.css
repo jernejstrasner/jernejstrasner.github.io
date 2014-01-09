@@ -17,13 +17,16 @@ html, body {
 body {
     background-color: #fff;
     color: #4a4a4a;
-    font-size: large;
+/*    font-size: large;*/
+	font-size: 22px;
+	line-height: 39px;
     text-align: center;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: 'Droid Serif', Georgia, serif;
+/*    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-size: 100%;
+    font-size: 140%;
     font-weight: normal;
 }
 
@@ -41,7 +44,6 @@ a {
 
 h2 {
     display: inline-block;
-    font-size: x-large;
 }
 
 a:hover {
@@ -80,6 +82,10 @@ a:visited {
 
 #posts div.post {
     margin-bottom: 3em;
+}
+
+#posts a.post-title {
+	font-size: 160%;
 }
 
 /*****************************************************************************/
@@ -179,19 +185,14 @@ a:visited {
     margin-left: 1.35em;
 }
 
-#post pre {
-    background-color: #fffcf5;
+#post pre, code {
+    background-color: #fcfcfc;
 	border: 1px solid #e6e6e6;
 	border-radius: 5px;
-    padding: 0 .4em;
 }
 
-#post code {
-    background-color: #fffcf5;
-	border: 1px solid #e6e6e6;
-	border-radius: 5px;
-    padding: 0 .2em;
-}
+#post pre { padding: 0 .4em; }
+#post code { padding: 0 .2em; }
 
 #post div.highlight pre {
     border: 0;
@@ -209,6 +210,20 @@ a:visited {
     border: none;
 }
 
+#post-title {
+    color: rgb(170,0,0);
+	font-size: 35px;
+}
+
+#post img.center {
+	display: block;
+	margin: 0 auto;
+}
+
+#post img.border {
+	border: 1px solid #e6e6e6;
+}
+
 /* terminal */
 #post pre.terminal {
     border: 1px solid #000;
@@ -221,8 +236,10 @@ a:visited {
 }
 
 #post div.highlight {
+	font-size: 14px !important;
+	line-height: 20px;
 	overflow-x: scroll;
-    background-color: #fffcf5;
+    background-color: #fcfcfc;
 	border: 1px solid #e6e6e6;
 	border-radius: 5px;
 	padding: 0 0.4em 0 0.4em;
