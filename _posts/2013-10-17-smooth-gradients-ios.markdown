@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Smooth color transition gradients with CoreGraphics"
-date:   2013-10-17 12:58:11
-categories: ios, osx, objc, graphics
+date:   2014-01-8 23:00:00
+categories: ios osx objc graphics
 ---
 
 I thought drawing gradients on iOS is easy. Well, until our designer gave me this:
@@ -13,16 +13,18 @@ I went on and implemented the `drawRect:` method on a custom UIView. I used `CGG
 
 ![Gradient drawn with CGGradient]({{ site.url }}/images/2013-10-17/gradient_cg.png)
 
-I played around with different colors and their positions but nothing like the design I had. After some head scratching I figured it must be something to do with how the colors are interpolated. `CGGradient` uses a linear interpolation of colors. The problem is that the transitions at the beginning and end of the gradient is not smooth because the color starts linearly fading right away.
+I played around with different colors and their positions but nothing turned out like the Photoshop gradient. After some head scratching I figured it must be something to do with how the colors are interpolated. `CGGradient` uses a linear interpolation of colors.
 
 ![Plot y = x]({{ site.url }}/images/2013-10-17/linear.png)
 
-What I need is an ease-in ease-out function and apply that to each color component. I actually cared only about transparency so I had to only adjust the alpha channel.
+What I need is a slope (ease-in ease-out for you familiar with animation timings) function and apply that to each color component. I actually cared only about transparency so I had to only adjust the alpha channel.
 I needed this: <img src="{{ site.url }}/images/2013-10-17/slope_func.png"/>
 
 ![Plot slope]({{ site.url }}/images/2013-10-17/slope.png)
 
-Looking at the documentation, `CGGradient` doesn't support custom color interpolation. There is something called `CGShading` that does. The documentation is no absolutely clear on how to use it, but after some experimenting I came up with a solution.
+Looking at the documentation, `CGGradient` doesn't support custom color interpolation. There is something called `CGShading` that does. The documentation is not absolutely clear on how to use it, but after some experimenting I came up with a solution, which is presented below. There is also a sample project available on [GitHub](https://github.com/jernejstrasner/Smooth-Gradient) so you can compare CGGradient and CGShading.
+
+Hope somebody finds this useful!
 
 {% highlight objc %}
 - (void)drawRect:(CGRect)rect
@@ -57,8 +59,6 @@ Looking at the documentation, `CGGradient` doesn't support custom color interpol
 	// Clean up
 	CGFunctionRelease(function);
 	CGShadingRelease(shading);
-
-	// Clean up
 	CGColorSpaceRelease(colorSpace);
 }
 
@@ -71,7 +71,8 @@ static void blackShade(void *info, const CGFloat *inData, CGFloat *outData)
 }
 
 // ristributes values on a slope (ease-in ease-out)
-static float slope(float x, float A) {
+static float slope(float x, float A)
+{
 	float p = powf(x, A);
 	return p/(p + powf(1.0f-x, A));
 }
