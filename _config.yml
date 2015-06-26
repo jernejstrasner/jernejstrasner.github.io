@@ -32,7 +32,7 @@ owner:
 
 timezone: Europe/Ljubljana
 future: true
-highlighter: true
+highlighter: pygments
 markdown: kramdown
 
 reading_time: true
