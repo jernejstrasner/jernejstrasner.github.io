@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "Smooth gradients on iOS/OSX"
-date:   2014-01-8 23:00:00
-categories: ios osx objc graphics
+title: "Smooth gradients on iOS/OSX"
+date: 2014-01-8 23:00:00
+tags: [ios, osx, objc, graphics]
 ---
 
 I thought drawing gradients on iOS is easy. Well, until our designer gave me this:

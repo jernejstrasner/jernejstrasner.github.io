@@ -1,0 +1,12 @@
+---
+layout: {{ layout }}
+title: {{ title }}
+modified: {{ date }}
+tags: []
+description:
+share: true
+image:
+  feature:
+  credit:
+  creditlink:
+---

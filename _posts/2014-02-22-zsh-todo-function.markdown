@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "A simple ZSH todo function"
-date:   2014-01-22 19:00:00
-categories: zsh
+title: "A simple ZSH todo function"
+date: 2014-01-22 19:00:00
+tags: [zsh]
 ---
 
 I got tired of all todo apps and needed a simpler way of handling my everyday tasks.
