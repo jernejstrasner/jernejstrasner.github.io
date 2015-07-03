@@ -10,18 +10,18 @@ My OS X desktop was mostly empty, I was only keeping files that reminded me of t
 So I though, why not use my desktop as my todo list? I already spend a lot of time in
 the terminal so a simple ZSH todo function solved all my todo problems.
 
-{% highlight bash %}
+{% codeblock lang:bash linenos:true %}
 # Simple todo function
 function todo() {
-	if (( $# == 2 )); then
-		echo $1"\n\n"$2 > ~/Desktop/$1.txt
-	elif (( $# == 1 )); then
-		echo $1 > ~/Desktop/$1.txt
-	else
-		echo "Not enough arguments!"
-	fi
+    if (( $# == 2 )); then
+        echo $1"\n\n"$2 > ~/Desktop/$1.txt
+    elif (( $# == 1 )); then
+        echo $1 > ~/Desktop/$1.txt
+    else
+        echo "Not enough arguments!"
+    fi
 }
-{% endhighlight %}
+{% endcodeblock %}
 
 Bonus: If you're using Alfred on OSX, you can use the workflow below. Just type "todo" in Alfred's command window and make sure you escape or quote the arguments if they contain spaces.
 

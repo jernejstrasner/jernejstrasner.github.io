@@ -28,7 +28,7 @@ Looking at the documentation, `CGGradient` doesn't support custom color interpol
 
 Hope somebody finds this useful!
 
-{% highlight objc %}
+{% codeblock lang:objc %}
 - (void)drawRect:(CGRect)rect
 {
 	// Draw the gradient background
@@ -78,4 +78,4 @@ static float slope(float x, float A)
 	float p = powf(x, A);
 	return p/(p + powf(1.0f-x, A));
 }
-{% endhighlight %}
+{% endcodeblock %}

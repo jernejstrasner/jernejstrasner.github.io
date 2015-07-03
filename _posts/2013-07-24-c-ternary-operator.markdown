@@ -10,23 +10,23 @@ But what some people may not know is that you can also use this operator with on
 
 Instead of writing
 
-{% highlight c %}
+{% codeblock lang:c linenos:false %}
 int y = 23;
 int x = (y ? y : 34);
-{% endhighlight %}
+{% endcodeblock %}
 
 you can do this
 
-{% highlight c %}
+{% codeblock lang:c linenos:false %}
 int y = 23;
 int x = (y ?: 34);
-{% endhighlight %}
+{% endcodeblock %}
 
 The other thing some of you may not know is that when defining a const you can't use an if statement to define it based on a condition, but you can do this:
 
-{% highlight c %}
+{% codeblock lang:c linenos:false %}
 int y = 23;
 const int x = (y ?: 34);
-{% endhighlight %}
+{% endcodeblock %}
 
 That's it for the first post!
