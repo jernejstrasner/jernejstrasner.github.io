@@ -5,31 +5,30 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Latest Posts &#8211; Jernej Strasner</title>
-<meta name="description" content="A blog about coding, product design and tech in general.">
-<meta name="keywords" content="coding, swift, ios, objc, tech, xcode, lldb, llvm">
+<title>Smooth gradients on iOS/OSX &#8211; Jernej Strasner</title>
+<meta name="description" content="A blog.">
+<meta name="keywords" content="ios, osx, objc, graphics">
 
 <!-- Twitter Cards -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://localhost:4000//images/abstract-1.jpg">
-
-<meta name="twitter:title" content="Latest Posts">
-<meta name="twitter:description" content="A blog about coding, product design and tech in general.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://localhost:4000//images/">
+<meta name="twitter:title" content="Smooth gradients on iOS/OSX">
+<meta name="twitter:description" content="A blog.">
 <meta name="twitter:creator" content="@JernejStrasner">
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Latest Posts">
-<meta property="og:description" content="A blog about coding, product design and tech in general.">
-<meta property="og:url" content="http://localhost:4000//index.html">
+<meta property="og:title" content="Smooth gradients on iOS/OSX">
+<meta property="og:description" content="A blog.">
+<meta property="og:url" content="http://localhost:4000//2014/01/09/smooth-gradients-ios.html">
 <meta property="og:site_name" content="Jernej Strasner">
 
 
 
 
 
-<link rel="canonical" href="http://localhost:4000//">
+<link rel="canonical" href="http://localhost:4000//2014/01/09/smooth-gradients-ios.html">
 <link href="http://localhost:4000//feed.xml" type="application/atom+xml" rel="alternate" title="Jernej Strasner Feed">
 
 <!-- http://t.co/dKP3o1e -->
@@ -66,7 +65,7 @@
 <link href='/stylesheets/all-0a3157176c8aeee7b2a01f32410a4e0f.css' media='all' rel='stylesheet' type='text/css'>
 </head>
 
-<body id="post-index" class="feature">
+<body id="post" >
 
 <!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
 <nav id="dl-menu" class="dl-menuwrapper" role="navigation">
@@ -109,83 +108,27 @@
 	</ul><!-- /.dl-menu -->
 </nav><!-- /.dl-menuwrapper -->
 
-<div class="entry-header">
-  <div class="image-credit">Image source: <a href="http://www.dargadgetz.com/ios-7-abstract-wallpaper-pack-for-iphone-5-and-ipod-touch-retina/">dargadgetz</a></div><!-- /.image-credit -->
-  
-    <div class="entry-image">
-      <img src="http://localhost:4000//images/abstract-1.jpg" alt="Latest Posts">
-    </div><!-- /.entry-image -->
-  
-  <div class="header-title">
-    <div class="header-title-wrap">
-      <h1>Jernej Strasner</h1>
-      <h2>Latest Posts</h2>
-    </div><!-- /.header-title-wrap -->
-  </div><!-- /.header-title -->
-</div><!-- /.entry-header -->
+
 
 <div id="main" role="main">
-  
-<article class="hentry">
-  <header>
-    
-    <div class="entry-meta">
-      <span class="entry-date date published updated"><time datetime="2014-01-22T20:00:00+01:00"><a href="http://localhost:4000//2014/01/22/zsh-todo-function.html">January 22, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000//about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
-      
-      <span class="entry-reading-time">
-        <i class="fa fa-clock-o"></i>
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
         
-        Reading time ~1 minute
-      </span><!-- /.entry-reading-time -->
-      
-    </div><!-- /.entry-meta -->
-    
-      <h1 class="entry-title"><a href="http://localhost:4000//2014/01/22/zsh-todo-function.html" rel="bookmark" title="A simple ZSH todo function" itemprop="url">A simple ZSH todo function</a></h1>
-    
-  </header>
-  <div class="entry-content">
-    <p>I got tired of all todo apps and needed a simpler way of handling my everyday tasks.
-My OS X desktop was mostly empty, I was only keeping files that reminded me of tasks.
-So I though, why not use my desktop as my todo list? I already spend a lot of time in
-the terminal so a simple ZSH todo function solved all my todo problems.</p>
-
-<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="c"># Simple todo function</span>
-</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">function</span> todo<span class="o">()</span> <span class="o">&#x7b;</span>
-</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">if</span> <span class="o">((</span> <span class="nv">$# </span><span class="o">==</span> <span class="m">2</span> <span class="o">))</span><span class="p">;</span> <span class="k">then</span>
-</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="nb">echo</span> <span class="nv">$1</span><span class="s2">&quot;\n\n&quot;</span><span class="nv">$2</span> &gt; ~/Desktop/<span class="nv">$1</span>.txt
-</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">elif</span> <span class="o">((</span> <span class="nv">$# </span><span class="o">==</span> <span class="m">1</span> <span class="o">))</span><span class="p">;</span> <span class="k">then</span>
-</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="nb">echo</span> <span class="nv">$1</span> &gt; ~/Desktop/<span class="nv">$1</span>.txt
-</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">else</span>
-</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="nb">echo</span> <span class="s2">&quot;Not enough arguments!&quot;</span>
-</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">fi</span>
-</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="o">&#x7d;</span></div></div></pre></div></figure>
-
-<p>Bonus: If you’re using Alfred on OSX, you can use the workflow below. Just type “todo” in Alfred’s command window and make sure you escape or quote the arguments if they contain spaces.</p>
-
-<p><a href="http://localhost:4000//files/zsh_todo.alfredworkflow">TODO Alfred Workflow</a></p>
-
-  </div><!-- /.entry-content -->
-</article><!-- /.hentry -->
-
-<article class="hentry">
-  <header>
-    
-    <div class="entry-meta">
-      <span class="entry-date date published updated"><time datetime="2014-01-09T00:00:00+01:00"><a href="http://localhost:4000//2014/01/09/smooth-gradients-ios.html">January 09, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000//about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
-      
-      <span class="entry-reading-time">
-        <i class="fa fa-clock-o"></i>
+          <h1 class="entry-title"><a href="http://localhost:4000//2014/01/09/smooth-gradients-ios.html" rel="bookmark" title="Smooth gradients on iOS/OSX">Smooth gradients on iOS/OSX</a></h1>
         
-        Reading time ~4 minutes
-      </span><!-- /.entry-reading-time -->
-      
-    </div><!-- /.entry-meta -->
-    
-      <h1 class="entry-title"><a href="http://localhost:4000//2014/01/09/smooth-gradients-ios.html" rel="bookmark" title="Smooth gradients on iOS/OSX" itemprop="url">Smooth gradients on iOS/OSX</a></h1>
-    
-  </header>
-  <div class="entry-content">
-    <p>I thought drawing gradients on iOS is easy. Well, until our designer gave me this:</p>
+        <h2><span class="entry-date date published"><time datetime="2014-01-09T00:00:00+01:00">January 09, 2014</time></span></h2>
+        
+        <p class="entry-reading-time">
+          <i class="fa fa-clock-o"></i>
+          
+          Reading time ~4 minutes
+        </p><!-- /.entry-reading-time -->
+        
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <p>I thought drawing gradients on iOS is easy. Well, until our designer gave me this:</p>
 
 <p><img class="center" src="/images/2013-10-17/gradient_ps.png" alt="" title="Smooth gradient drawn in Photoshop" /></p>
 
@@ -249,67 +192,38 @@ I needed this:</p>
 </div></div><div data-line="48" class="code-highlight-row numbered"><div class="code-highlight-line">	<span class="k">return</span> <span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">powf</span><span class="p">(</span><span class="mf">1.0f</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">A</span><span class="p">));</span>
 </div></div><div data-line="49" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
 
-  </div><!-- /.entry-content -->
-</article><!-- /.hentry -->
-
-<article class="hentry">
-  <header>
-    
-    <div class="entry-meta">
-      <span class="entry-date date published updated"><time datetime="2013-07-24T14:58:00+02:00"><a href="http://localhost:4000//2013/07/24/c-ternary-operator.html">July 24, 2013</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000//about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
-      
-      <span class="entry-reading-time">
-        <i class="fa fa-clock-o"></i>
+      <footer class="entry-meta">
+        <span class="entry-tags"><a href="http://localhost:4000//tags/#ios" title="Pages tagged ios" class="tag"><span class="term">ios</span></a><a href="http://localhost:4000//tags/#osx" title="Pages tagged osx" class="tag"><span class="term">osx</span></a><a href="http://localhost:4000//tags/#objc" title="Pages tagged objc" class="tag"><span class="term">objc</span></a><a href="http://localhost:4000//tags/#graphics" title="Pages tagged graphics" class="tag"><span class="term">graphics</span></a></span>
         
-        Reading time ~1 minute
-      </span><!-- /.entry-reading-time -->
-      
-    </div><!-- /.entry-meta -->
-    
-      <h1 class="entry-title"><a href="http://localhost:4000//2013/07/24/c-ternary-operator.html" rel="bookmark" title="The ternary operator in C" itemprop="url">The ternary operator in C</a></h1>
-    
-  </header>
-  <div class="entry-content">
-    <p>Most programmers are familiar with the ternary operator <a href="http://en.wikipedia.org/wiki/%3F:#C">?:</a> that is available in C and most other languages.
-But what some people may not know is that you can also use this operator with only two arguments.</p>
-
-<p>Instead of writing</p>
-
-<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
-</div></div><div data-line="2" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">?</span> <span class="nl">y</span> <span class="p">:</span> <span class="mi">34</span><span class="p">);</span></div></div></pre></div></figure>
-
-<p>you can do this</p>
-
-<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
-</div></div><div data-line="2" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">?:</span> <span class="mi">34</span><span class="p">);</span></div></div></pre></div></figure>
-
-<p>The other thing some of you may not know is that when defining a const you can’t use an if statement to define it based on a condition, but you can do this:</p>
-
-<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
-</div></div><div data-line="2" class="code-highlight-row unnumbered"><div class="code-highlight-line"><span class="k">const</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">?:</span> <span class="mi">34</span><span class="p">);</span></div></div></pre></div></figure>
-
-<p>That’s it for the first post!</p>
-
-  </div><!-- /.entry-content -->
-</article><!-- /.hentry -->
-
-
-<div class="pagination">
-  
-    Previous
-  
-  <ul class="inline-list">
-    <li>
-      
-        <span class="current-page">1</span>
-      
-    </li>
-    
+        <div class="social-share">
+  <ul class="socialcount socialcount-small inline-list">
+    <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000//2014/01/09/smooth-gradients-ios.html" title="Share on Facebook"><span class="count"><i class="fa fa-facebook-square"></i> Like</span></a></li>
+    <li class="twitter"><a href="https://twitter.com/intent/tweet?text=http://localhost:4000//2014/01/09/smooth-gradients-ios.html" title="Share on Twitter"><span class="count"><i class="fa fa-twitter-square"></i> Tweet</span></a></li>
+    <li class="googleplus"><a href="https://plus.google.com/share?url=http://localhost:4000//2014/01/09/smooth-gradients-ios.html" title="Share on Google Plus"><span class="count"><i class="fa fa-google-plus-square"></i> +1</span></a></li>
   </ul>
+</div><!-- /.social-share -->
+      </footer>
+    </div><!-- /.entry-content -->
+    <div class="read-more">
   
-    Next
+    <div class="read-more-header">
+      <a href="http://localhost:4000//2013/07/24/c-ternary-operator.html" class="read-more-btn">Read More</a>
+    </div><!-- /.read-more-header -->
+    <div class="read-more-content">
+      <h3><a href="http://localhost:4000//2014/01/22/zsh-todo-function.html" title="A simple ZSH todo function">A simple ZSH todo function</a></h3>
+      <p>I got tired of all todo apps and needed a simpler way of handling my everyday tasks.My OS X desktop was mostly empty, I was only keeping ...&hellip; <a href="http://localhost:4000//2014/01/22/zsh-todo-function.html">Continue reading</a></p>
+    </div><!-- /.read-more-content -->
   
-</div><!-- /.pagination -->
+  <div class="read-more-list">
+    
+      <div class="list-item">
+        <h4><a href="http://localhost:4000//2013/07/24/c-ternary-operator.html" title="The ternary operator in C">The ternary operator in C</a></h4>
+        <span>Published on July 24, 2013</span>
+      </div><!-- /.list-item -->
+    
+  </div><!-- /.read-more-list -->
+</div><!-- /.read-more -->
+  </article>
 </div><!-- /#main -->
 
 <div class="footer-wrapper">
@@ -320,7 +234,7 @@ But what some people may not know is that you can also use this operator with on
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="http://localhost:4000//assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
-<script src="http://localhost:4000//assets/js/scripts.min.js"></script>          
+<script src="http://localhost:4000//assets/js/scripts.min.js"></script>	        
 
 </body>
 </html>
