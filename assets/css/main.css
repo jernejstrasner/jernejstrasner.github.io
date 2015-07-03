@@ -2373,6 +2373,15 @@ figure {
 svg:not(:root) {
   overflow: hidden; }
 
+img.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto; }
+img.left {
+  float: left; }
+img.right {
+  float: right; }
+
 .btn, .read-more-header a, #goog-wm-sb {
   display: inline-block;
   margin-bottom: 20px;
