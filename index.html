@@ -130,6 +130,146 @@
   <header>
     
     <div class="entry-meta">
+      <span class="entry-date date published updated"><time datetime="2014-10-01T11:42:36+02:00"><a href="http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html">October 01, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000/about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
+      
+      <span class="entry-reading-time">
+        <i class="fa fa-clock-o"></i>
+        
+        Reading time ~2 minutes
+      </span><!-- /.entry-reading-time -->
+      
+    </div><!-- /.entry-meta -->
+    
+      <h1 class="entry-title"><a href="http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html" rel="bookmark" title="NSFastEnumeration in Swift" itemprop="url">NSFastEnumeration in Swift</a></h1>
+    
+  </header>
+  <div class="entry-content">
+    <p>I spent the past few weeks digging into Swift while working on PSPDFKit. Today I was trying to enumerate a directory recursively.
+I resorted to <code>NSFileManager</code> and its method <code>enumeratorAtURL:includingPropertiesForKeys:options:errorHandler:</code>.
+It returns an <code>NSDirectoryEnumerator</code> object which supports <code>NSFastEnumeration</code>. That means you can use the for-in loop in Objective-C.
+Without thinking, I wrote a for-in loop in Swift. Not so fast.</p>
+
+<blockquote>
+  <p>Type ‘NSDirectoryEnumerator’ does not conform to protocol ‘SequenceType’.</p>
+</blockquote>
+
+<p>Apple should have supported this. So I spent some time browsing trough the Swift headers and with the help of generics
+I wrote a custom substruct (?) that conforms to the <code>GeneratorType</code> protocol and can be initialized with an object of type <code>NSEnumerator</code>.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="n">public</span> <span class="k">struct</span> <span class="n">GenericGenerator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">:</span> <span class="n">GeneratorType</span><span class="p">,</span> <span class="n">SequenceType</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="k">let</span> <span class="nl">enumerator</span><span class="p">:</span> <span class="bp">NSEnumerator</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="k">init</span><span class="p">(</span><span class="n">_</span> <span class="nl">enumerator</span><span class="p">:</span> <span class="bp">NSEnumerator</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="nb">self</span><span class="p">.</span><span class="n">enumerator</span> <span class="o">=</span> <span class="n">enumerator</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="p">&#x7d;</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="kr">mutating</span> <span class="n">public</span> <span class="k">func</span> <span class="n">next</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="o">?</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">return</span> <span class="nb">self</span><span class="p">.</span><span class="n">enumerator</span><span class="p">.</span><span class="n">nextObject</span><span class="p">()</span> <span class="kt">as</span> <span class="n">T</span><span class="o">?</span>
+</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="p">&#x7d;</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="n">public</span> <span class="k">func</span> <span class="n">generate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">GenericGenerator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="13" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">return</span> <span class="n">GenericGenerator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">enumerator</span><span class="p">)</span>
+</div></div><div data-line="14" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="p">&#x7d;</span>
+</div></div><div data-line="15" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>In my case I was dealing with <code>NSDirectoryEnumerator</code> which iterates trough <code>NSURL</code> objects. So I wrote an extension to extend it with support for <code>SequenceType</code>.
+The nice thing is that using for-in in Swift now provides you with <code>NSURL</code> objects!</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">extension</span> <span class="nl">NSDirectoryEnumerator</span> <span class="p">:</span> <span class="n">SequenceType</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="n">public</span> <span class="k">func</span> <span class="n">generate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">GenericGenerator</span><span class="o">&lt;</span><span class="bp">NSURL</span><span class="o">&gt;</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">return</span> <span class="n">GenericGenerator</span><span class="o">&lt;</span><span class="bp">NSURL</span><span class="o">&gt;</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="p">&#x7d;</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>This generic can now be used to extend any kind of <code>NSEnumerator</code> so you can enjoy clean for-in loops in Swift.</p>
+
+  </div><!-- /.entry-content -->
+</article><!-- /.hentry -->
+
+<article class="hentry">
+  <header>
+    
+    <div class="entry-meta">
+      <span class="entry-date date published updated"><time datetime="2014-06-07T14:20:26+02:00"><a href="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html">June 07, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000/about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
+      
+      <span class="entry-reading-time">
+        <i class="fa fa-clock-o"></i>
+        
+        Reading time ~3 minutes
+      </span><!-- /.entry-reading-time -->
+      
+    </div><!-- /.entry-meta -->
+    
+      <h1 class="entry-title"><a href="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" rel="bookmark" title="Singleton Pattern in Swift" itemprop="url">Singleton Pattern in Swift</a></h1>
+    
+  </header>
+  <div class="entry-content">
+    <p>Like just about any other iOS developer, I was caught completely by surprise when Apple announced Swift.
+I was expecting modest improvements to Objective-C, maybe even an Objective-C 3.0 release, but nothing as wild as a new language.
+But I got excited, really excited, when I watched the state of the union video (no, I was not one of the lucky WWDC ticket lottery winners).
+I started reading the Swift book right away. <em>“I’m going to read this trough first,”</em> I said to myself, <em>“and hack later.”</em>
+Well, guess what? I started hacking after the introduction chapter. After I alternated between reading and hacking for a while,
+I needed a project to work on. And so I chose to port <a href="https://github.com/jernejstrasner/JSImageLoader">JSImageLoader</a> to Swift and see how it goes.</p>
+
+<p><strong>Update</strong>: See the updated code for Swift 1.2 at the bottom of this post.</p>
+
+<p>The first thing I did was to outline classes and add properties. This was easy. The second step was to implement initializers.
+Trivial, if it’s not a singleton. My first idea was to write it the exact same way I would do it in Objective-C, using dispatch_once.
+I came across a major difference right away; static variables can only be declared inside enums and structs.
+Luckily structs can be defined inside methods and, like in this case, property getters. So I came up with the code below:</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">class</span> <span class="n">var</span> <span class="nl">sharedInstance</span><span class="p">:</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">struct</span> <span class="n">Singleton</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">var</span> <span class="nl">token</span> <span class="p">:</span> <span class="kt">dispatch_once_t</span> <span class="o">=</span> <span class="mi">0</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">var</span> <span class="nl">instance</span> <span class="p">:</span> <span class="n">MyClass</span><span class="o">?</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Singleton</span><span class="p">.</span><span class="n">token</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">return</span> <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span><span class="o">!</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Works, great!</p>
+
+<p>Then I read more of the book, watched some more WWDC videos and browsed more of the Apple developer forums.
+Then I found this post by Joe Groff (@jckarter) who works on the Swift compiler:</p>
+
+<blockquote>
+  <p>Global and static properties are already dispatch_once’d, so there’s really no need for this. You can simply define the singleton instance as a global variable or static let property of a struct.</p>
+</blockquote>
+
+<p>This is getting better and better! He says there are two options, one with a global variable and one with a static let as the property of a struct.
+I’m not a fan of polluting the global space too much so I chose the latter:</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">class</span> <span class="n">var</span> <span class="nl">sharedInstance</span><span class="p">:</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">struct</span> <span class="n">Singleton</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">let</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">return</span> <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Much nicer!</p>
+
+<p>While I do agree that this could be made even nicer by having a private static class let property,
+I think that it’s great that global variables and static let properties are wrapped in dispatch_once.
+I’m sticking to this implementation for now.</p>
+
+<p><strong>Update</strong>: Swift 1.2 added support for static properties on classes so now a singleton can be simply initialized when declaring the property. No more embedded structs!</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">static</span> <span class="n">let</span> <span class="n">sharedInstance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>That’s it!</p>
+
+  </div><!-- /.entry-content -->
+</article><!-- /.hentry -->
+
+<article class="hentry">
+  <header>
+    
+    <div class="entry-meta">
       <span class="entry-date date published updated"><time datetime="2014-01-09T00:00:00+01:00"><a href="http://localhost:4000/2014/01/09/smooth-gradients-ios.html">January 09, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://localhost:4000/about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
       
       <span class="entry-reading-time">

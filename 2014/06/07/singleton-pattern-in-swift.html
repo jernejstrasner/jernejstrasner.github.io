@@ -1,0 +1,244 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Singleton Pattern in Swift &#8211; Jernej Strasner</title>
+<meta name="description" content="A blog.">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://localhost:4000/images/">
+<meta name="twitter:title" content="Singleton Pattern in Swift">
+<meta name="twitter:description" content="A blog.">
+<meta name="twitter:creator" content="@JernejStrasner">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Singleton Pattern in Swift">
+<meta property="og:description" content="A blog.">
+<meta property="og:url" content="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html">
+<meta property="og:site_name" content="Jernej Strasner">
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html">
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Jernej Strasner Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.css">
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="http://localhost:4000/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="http://localhost:4000/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://localhost:4000/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://localhost:4000/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://localhost:4000/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+<link href='/stylesheets/all-0a3157176c8aeee7b2a01f32410a4e0f.css' media='all' rel='stylesheet' type='text/css'>
+</head>
+
+<body id="post" >
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+<nav id="dl-menu" class="dl-menuwrapper" role="navigation">
+	<button class="dl-trigger">Open Menu</button>
+	<ul class="dl-menu">
+		<li><a href="http://localhost:4000/">Home</a></li>
+		<li>
+			<a href="#">About</a>
+			<ul class="dl-submenu">
+				<li>
+					<img src="http://localhost:4000/images/avatar.jpg" alt="Jernej Strasner photo" class="author-photo">
+					<h4>Jernej Strasner</h4>
+					<p>iOS engineer, all-around technology enthusiast, car fanatic, active & healthy lifestyle.</p>
+				</li>
+				<li><a href="http://localhost:4000/about/"><span class="btn btn-inverse">Learn More</span></a></li>
+				
+				<li>
+					<a href="http://twitter.com/JernejStrasner"><i class="fa fa-fw fa-twitter"></i> Twitter</a>
+				</li>
+				
+				
+				
+				<li>
+					<a href="http://github.com/jernejstrasner"><i class="fa fa-fw fa-github"></i> GitHub</a>
+				</li>
+				
+				
+				
+				
+			</ul><!-- /.dl-submenu -->
+		</li>
+		<li>
+			<a href="#">Posts</a>
+			<ul class="dl-submenu">
+				<li><a href="http://localhost:4000/posts/">All Posts</a></li>
+				<li><a href="http://localhost:4000/tags/">All Tags</a></li>
+			</ul>
+		</li>
+		
+	</ul><!-- /.dl-menu -->
+</nav><!-- /.dl-menuwrapper -->
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
+        
+          <h1 class="entry-title"><a href="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" rel="bookmark" title="Singleton Pattern in Swift">Singleton Pattern in Swift</a></h1>
+        
+        <h2><span class="entry-date date published"><time datetime="2014-06-07T14:20:26+02:00">June 07, 2014</time></span></h2>
+        
+        <p class="entry-reading-time">
+          <i class="fa fa-clock-o"></i>
+          
+          Reading time ~3 minutes
+        </p><!-- /.entry-reading-time -->
+        
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <p>Like just about any other iOS developer, I was caught completely by surprise when Apple announced Swift.
+I was expecting modest improvements to Objective-C, maybe even an Objective-C 3.0 release, but nothing as wild as a new language.
+But I got excited, really excited, when I watched the state of the union video (no, I was not one of the lucky WWDC ticket lottery winners).
+I started reading the Swift book right away. <em>“I’m going to read this trough first,”</em> I said to myself, <em>“and hack later.”</em>
+Well, guess what? I started hacking after the introduction chapter. After I alternated between reading and hacking for a while,
+I needed a project to work on. And so I chose to port <a href="https://github.com/jernejstrasner/JSImageLoader">JSImageLoader</a> to Swift and see how it goes.</p>
+
+<p><strong>Update</strong>: See the updated code for Swift 1.2 at the bottom of this post.</p>
+
+<p>The first thing I did was to outline classes and add properties. This was easy. The second step was to implement initializers.
+Trivial, if it’s not a singleton. My first idea was to write it the exact same way I would do it in Objective-C, using dispatch_once.
+I came across a major difference right away; static variables can only be declared inside enums and structs.
+Luckily structs can be defined inside methods and, like in this case, property getters. So I came up with the code below:</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">class</span> <span class="n">var</span> <span class="nl">sharedInstance</span><span class="p">:</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">struct</span> <span class="n">Singleton</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">var</span> <span class="nl">token</span> <span class="p">:</span> <span class="kt">dispatch_once_t</span> <span class="o">=</span> <span class="mi">0</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">var</span> <span class="nl">instance</span> <span class="p">:</span> <span class="n">MyClass</span><span class="o">?</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Singleton</span><span class="p">.</span><span class="n">token</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">return</span> <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span><span class="o">!</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Works, great!</p>
+
+<p>Then I read more of the book, watched some more WWDC videos and browsed more of the Apple developer forums.
+Then I found this post by Joe Groff (@jckarter) who works on the Swift compiler:</p>
+
+<blockquote>
+  <p>Global and static properties are already dispatch_once’d, so there’s really no need for this. You can simply define the singleton instance as a global variable or static let property of a struct.</p>
+</blockquote>
+
+<p>This is getting better and better! He says there are two options, one with a global variable and one with a static let as the property of a struct.
+I’m not a fan of polluting the global space too much so I chose the latter:</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">class</span> <span class="n">var</span> <span class="nl">sharedInstance</span><span class="p">:</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">struct</span> <span class="n">Singleton</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">            <span class="k">static</span> <span class="n">let</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">&#x7d;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">return</span> <span class="n">Singleton</span><span class="p">.</span><span class="n">instance</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Much nicer!</p>
+
+<p>While I do agree that this could be made even nicer by having a private static class let property,
+I think that it’s great that global variables and static let properties are wrapped in dispatch_once.
+I’m sticking to this implementation for now.</p>
+
+<p><strong>Update</strong>: Swift 1.2 added support for static properties on classes so now a singleton can be simply initialized when declaring the property. No more embedded structs!</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="n">MyClass</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">static</span> <span class="n">let</span> <span class="n">sharedInstance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>That’s it!</p>
+
+      <footer class="entry-meta">
+        <span class="entry-tags"></span>
+        <span>Updated on <span class="entry-date date updated"><time datetime="2015-05-09 10:13:22 +0200">May 09, 2015</time></span></span>
+        <span class="author vcard"><span class="fn">Jernej Strasner</span></span>
+        <div class="social-share">
+  <ul class="socialcount socialcount-small inline-list">
+    <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" title="Share on Facebook"><span class="count"><i class="fa fa-facebook-square"></i> Like</span></a></li>
+    <li class="twitter"><a href="https://twitter.com/intent/tweet?text=http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" title="Share on Twitter"><span class="count"><i class="fa fa-twitter-square"></i> Tweet</span></a></li>
+    <li class="googleplus"><a href="https://plus.google.com/share?url=http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" title="Share on Google Plus"><span class="count"><i class="fa fa-google-plus-square"></i> +1</span></a></li>
+  </ul>
+</div><!-- /.social-share -->
+      </footer>
+    </div><!-- /.entry-content -->
+    <div class="read-more">
+  
+    <div class="read-more-header">
+      <a href="http://localhost:4000/2014/01/09/smooth-gradients-ios.html" class="read-more-btn">Read More</a>
+    </div><!-- /.read-more-header -->
+    <div class="read-more-content">
+      <h3><a href="http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html" title="NSFastEnumeration in Swift">NSFastEnumeration in Swift</a></h3>
+      <p>I spent the past few weeks digging into Swift while working on PSPDFKit. Today I was trying to enumerate a directory recursively.I resort...&hellip; <a href="http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html">Continue reading</a></p>
+    </div><!-- /.read-more-content -->
+  
+  <div class="read-more-list">
+    
+      <div class="list-item">
+        <h4><a href="http://localhost:4000/2014/01/09/smooth-gradients-ios.html" title="Smooth gradients on iOS/OSX">Smooth gradients on iOS/OSX</a></h4>
+        <span>Published on January 09, 2014</span>
+      </div><!-- /.list-item -->
+    
+      <div class="list-item">
+        <h4><a href="http://localhost:4000/2013/07/24/c-ternary-operator.html" title="The ternary operator in C">The ternary operator in C</a></h4>
+        <span>Published on July 24, 2013</span>
+      </div><!-- /.list-item -->
+    
+  </div><!-- /.read-more-list -->
+</div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2015 Jernej Strasner. Powered by <a href="https://github.com/octopress/octopress" rel="nofollow">Octopress</a> using the <a href="https://mademistakes.com/work/hpstr-jekyll-theme/" rel="nofollow">HPSTR Theme</a>.</span>
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="http://localhost:4000/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="http://localhost:4000/assets/js/scripts.min.js"></script>	        
+
+</body>
+</html>
