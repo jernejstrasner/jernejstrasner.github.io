@@ -2,27 +2,27 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <title type="text">Jernej Strasner</title>
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://localhost:4000/feed.xml" />
-<link rel="alternate" type="text/html" href="http://localhost:4000" />
-<updated>2015-07-06T14:53:15+02:00</updated>
-<id>http://localhost:4000/</id>
+<link rel="self" type="application/atom+xml" href="http://jernejstrasner.com/feed.xml" />
+<link rel="alternate" type="text/html" href="http://jernejstrasner.com" />
+<updated>2015-07-06T15:21:45+02:00</updated>
+<id>http://jernejstrasner.com/</id>
 <author>
   <name>Jernej Strasner</name>
-  <uri>http://localhost:4000/</uri>
+  <uri>http://jernejstrasner.com/</uri>
   
 </author>
 
 
 <entry>
   <title type="html"><![CDATA[NSFastEnumeration in Swift]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html" />
-  <id>http://localhost:4000/2014/10/01/nsfastenumeration-in-swift</id>
+ <link rel="alternate" type="text/html" href="http://jernejstrasner.com/2014/10/01/nsfastenumeration-in-swift.html" />
+  <id>http://jernejstrasner.com/2014/10/01/nsfastenumeration-in-swift</id>
   <updated>2014-10-01 11:42:36 +0200T00:00:00-00:00</updated>
   <published>2014-10-01T11:42:36+02:00</published>
   
   <author>
     <name>Jernej Strasner</name>
-    <uri>http://localhost:4000</uri>
+    <uri>http://jernejstrasner.com</uri>
     <email></email>
   </author>
   <content type="html">
@@ -62,21 +62,21 @@ The nice thing is that using for-in in Swift now provides you with &lt;code&gt;N
 
 &lt;p&gt;This generic can now be used to extend any kind of &lt;code&gt;NSEnumerator&lt;/code&gt; so you can enjoy clean for-in loops in Swift.&lt;/p&gt;
 
-    &lt;p&gt;&lt;a href=&quot;http://localhost:4000/2014/10/01/nsfastenumeration-in-swift.html&quot;&gt;NSFastEnumeration in Swift&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://localhost:4000&quot;&gt;Jernej Strasner&lt;/a&gt; on October 01, 2014.&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;http://jernejstrasner.com/2014/10/01/nsfastenumeration-in-swift.html&quot;&gt;NSFastEnumeration in Swift&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://jernejstrasner.com&quot;&gt;Jernej Strasner&lt;/a&gt; on October 01, 2014.&lt;/p&gt;
   </content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Singleton Pattern in Swift]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html" />
-  <id>http://localhost:4000/2014/06/07/singleton-pattern-in-swift</id>
+ <link rel="alternate" type="text/html" href="http://jernejstrasner.com/2014/06/07/singleton-pattern-in-swift.html" />
+  <id>http://jernejstrasner.com/2014/06/07/singleton-pattern-in-swift</id>
   <updated>2015-05-09 10:13:22 +0200T00:00:00-00:00</updated>
   <published>2014-06-07T14:20:26+02:00</published>
   
   <author>
     <name>Jernej Strasner</name>
-    <uri>http://localhost:4000</uri>
+    <uri>http://jernejstrasner.com</uri>
     <email></email>
   </author>
   <content type="html">
@@ -142,20 +142,20 @@ I’m sticking to this implementation for now.&lt;/p&gt;
 
 &lt;p&gt;That’s it!&lt;/p&gt;
 
-    &lt;p&gt;&lt;a href=&quot;http://localhost:4000/2014/06/07/singleton-pattern-in-swift.html&quot;&gt;Singleton Pattern in Swift&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://localhost:4000&quot;&gt;Jernej Strasner&lt;/a&gt; on June 07, 2014.&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;http://jernejstrasner.com/2014/06/07/singleton-pattern-in-swift.html&quot;&gt;Singleton Pattern in Swift&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://jernejstrasner.com&quot;&gt;Jernej Strasner&lt;/a&gt; on June 07, 2014.&lt;/p&gt;
   </content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Smooth gradients on iOS/OSX]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/2014/01/09/smooth-gradients-ios.html" />
-  <id>http://localhost:4000/2014/01/09/smooth-gradients-ios</id>
+ <link rel="alternate" type="text/html" href="http://jernejstrasner.com/2014/01/09/smooth-gradients-ios.html" />
+  <id>http://jernejstrasner.com/2014/01/09/smooth-gradients-ios</id>
   <published>2014-01-09T00:00:00+01:00</published>
   <updated>2014-01-09T00:00:00+01:00</updated>
   <author>
     <name>Jernej Strasner</name>
-    <uri>http://localhost:4000</uri>
+    <uri>http://jernejstrasner.com</uri>
     <email></email>
   </author>
   <content type="html">
@@ -185,20 +185,20 @@ I needed this:&lt;/p&gt;
 &lt;script src=&quot;https://gist.github.com/6319645344d17e7df8aa.js&quot;&gt; &lt;/script&gt;
 
 
-    &lt;p&gt;&lt;a href=&quot;http://localhost:4000/2014/01/09/smooth-gradients-ios.html&quot;&gt;Smooth gradients on iOS/OSX&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://localhost:4000&quot;&gt;Jernej Strasner&lt;/a&gt; on January 09, 2014.&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;http://jernejstrasner.com/2014/01/09/smooth-gradients-ios.html&quot;&gt;Smooth gradients on iOS/OSX&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://jernejstrasner.com&quot;&gt;Jernej Strasner&lt;/a&gt; on January 09, 2014.&lt;/p&gt;
   </content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[The ternary operator in C]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/2013/07/24/c-ternary-operator.html" />
-  <id>http://localhost:4000/2013/07/24/c-ternary-operator</id>
+ <link rel="alternate" type="text/html" href="http://jernejstrasner.com/2013/07/24/c-ternary-operator.html" />
+  <id>http://jernejstrasner.com/2013/07/24/c-ternary-operator</id>
   <published>2013-07-24T14:58:00+02:00</published>
   <updated>2013-07-24T14:58:00+02:00</updated>
   <author>
     <name>Jernej Strasner</name>
-    <uri>http://localhost:4000</uri>
+    <uri>http://jernejstrasner.com</uri>
     <email></email>
   </author>
   <content type="html">
@@ -222,7 +222,7 @@ But what some people may not know is that you can also use this operator with on
 
 &lt;p&gt;That’s it for the first post!&lt;/p&gt;
 
-    &lt;p&gt;&lt;a href=&quot;http://localhost:4000/2013/07/24/c-ternary-operator.html&quot;&gt;The ternary operator in C&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://localhost:4000&quot;&gt;Jernej Strasner&lt;/a&gt; on July 24, 2013.&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;http://jernejstrasner.com/2013/07/24/c-ternary-operator.html&quot;&gt;The ternary operator in C&lt;/a&gt; was originally published by Jernej Strasner at &lt;a href=&quot;http://jernejstrasner.com&quot;&gt;Jernej Strasner&lt;/a&gt; on July 24, 2013.&lt;/p&gt;
   </content>
 </entry>
 
