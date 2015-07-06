@@ -2379,9 +2379,11 @@ img.center {
   margin-left: auto;
   margin-right: auto; }
 img.left {
-  float: left; }
+  float: left;
+  margin: 0.5em 1em 1em 0; }
 img.right {
-  float: right; }
+  float: right;
+  margin: 0.5em 0 1em 1em; }
 
 .btn, .read-more-header a, #goog-wm-sb {
   display: inline-block;
