@@ -130,6 +130,109 @@
   <header>
     
     <div class="entry-meta">
+      <span class="entry-date date published updated"><time datetime="2015-07-08T15:47:48+02:00"><a href="http://jernejstrasner.com/2015/07/08/testing-throwable-methods-in-swift-2.html">July 08, 2015</a></time></span><span class="author vcard"><span class="fn"><a href="http://jernejstrasner.com/about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
+      
+      <span class="entry-reading-time">
+        <i class="fa fa-clock-o"></i>
+        
+        Reading time ~5 minutes
+      </span><!-- /.entry-reading-time -->
+      
+    </div><!-- /.entry-meta -->
+    
+      <h1 class="entry-title"><a href="http://jernejstrasner.com/2015/07/08/testing-throwable-methods-in-swift-2.html" rel="bookmark" title="Testing Throwable Methods in Swift 2" itemprop="url">Testing Throwable Methods in Swift 2</a></h1>
+    
+  </header>
+  <div class="entry-content">
+    <p>With the addition of error handling to Swift 2, we got a way to deal with errors with the nice try/catch exception handling syntax from many languages,
+but without the associated cost of stack unwinding.</p>
+
+<p>As with anything new, some questions come to mind. How do we test methods that can throw errors? In Objective-C we had a few <code>XCTest</code> assert macros to help with this, like <code>XCTAssertThrows</code>. Swift 1 does not support exceptions, so these macros,
+which get translated to Swift functions, are absent from the <code>XCTest</code> framework in Swift. I was expecting to find them in the Swift 2 version of the framework,
+but they’re missing.</p>
+
+<p>So the first thing that comes to mind is to just wrap the asserts into do/catch blocks.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="nf">testSomething</span><span class="p">()</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">try</span> <span class="n">XCTAssert</span><span class="p">(</span><span class="n">parseSomething</span><span class="p">()</span> <span class="o">==</span> <span class="s">&quot;result&quot;</span><span class="p">)</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;Parsing failed.&quot;</span><span class="p">)</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>And Xcode complains: <em>“Call can throw, but it is executed in a non-throwing autoclosure.”</em></p>
+
+<p>Assert macros use the <code>@autoclosure</code> attribute, so everything you pass to them becomes a closure. A non-throwing closure.
+So you need to first try to get the result and pass just that.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="nf">testSomething</span><span class="p">()</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">try</span> <span class="n">parseSomething</span><span class="p">()</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTAssertEqual</span><span class="p">(</span><span class="s">&quot;result&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;Parsing failed.&quot;</span><span class="p">)</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>This works. But, we hate repetition, don’t we?</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">XCTAssertThrows</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(@</span><span class="n">autoclosure</span> <span class="nl">expression</span><span class="p">:</span> <span class="p">()</span> <span class="n">throws</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">,</span> <span class="n">_</span> <span class="nl">message</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="kt">__FILE__</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">UInt</span> <span class="o">=</span> <span class="kt">__LINE__</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">try</span> <span class="n">expression</span><span class="p">()</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;No error to catch! - \(message)&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">XCTAssertNoThrow</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(@</span><span class="n">autoclosure</span> <span class="nl">expression</span><span class="p">:</span> <span class="p">()</span> <span class="n">throws</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">,</span> <span class="n">_</span> <span class="nl">message</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="kt">__FILE__</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">UInt</span> <span class="o">=</span> <span class="kt">__LINE__</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">try</span> <span class="n">expression</span><span class="p">()</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="k">let</span> <span class="n">error</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="13" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;Caught error: \(error) - \(message)&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="14" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="15" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span>
+</div></div><div data-line="16" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="17" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">testSomething</span><span class="p">()</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="18" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">XCTAssertNoThrow</span><span class="p">(</span><span class="n">try</span> <span class="n">parseSomething</span><span class="p">())</span>
+</div></div><div data-line="19" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">XCTAssertThrow</span><span class="p">(</span><span class="n">try</span> <span class="n">parseOtherThing</span><span class="p">())</span>
+</div></div><div data-line="20" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Good. We can check if a method throws or not. But some methods return things and we would like to compare these things to other things.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">XCTAssertNoThrowEqual</span><span class="o">&lt;</span><span class="nl">T</span> <span class="p">:</span> <span class="n">Equatable</span><span class="o">&gt;</span><span class="p">(@</span><span class="n">autoclosure</span> <span class="nl">expression1</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">,</span> <span class="p">@</span><span class="n">autoclosure</span> <span class="n">_</span> <span class="nl">expression2</span><span class="p">:</span> <span class="p">()</span> <span class="n">throws</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">,</span> <span class="n">_</span> <span class="nl">message</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="kt">__FILE__</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">UInt</span> <span class="o">=</span> <span class="kt">__LINE__</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">let</span> <span class="n">result2</span> <span class="o">=</span> <span class="n">try</span> <span class="n">expression2</span><span class="p">()</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTAssertEqual</span><span class="p">(</span><span class="n">expression1</span><span class="p">,</span> <span class="n">result2</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="k">let</span> <span class="n">error</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;Caught error: \(error) - \(message)&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">testSomething</span><span class="p">()</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">XCTAssertNoThrowEqual</span><span class="p">(</span><span class="s">&quot;result&quot;</span><span class="p">,</span> <span class="n">try</span> <span class="n">parseSomething</span><span class="p">())</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>Ok, that’s equality. But what about &gt;, &lt; and membership checks? Let’s add a validator closure then.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">XCTAssertNoThrowValidateValue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(@</span><span class="n">autoclosure</span> <span class="nl">expression</span><span class="p">:</span> <span class="p">()</span> <span class="n">throws</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">,</span> <span class="n">_</span> <span class="nl">message</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">String</span> <span class="o">=</span> <span class="kt">__FILE__</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">UInt</span> <span class="o">=</span> <span class="kt">__LINE__</span><span class="p">,</span> <span class="n">_</span> <span class="nl">validator</span><span class="p">:</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">)</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">do</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="k">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">try</span> <span class="n">expression</span><span class="p">()</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTAssert</span><span class="p">(</span><span class="n">validator</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="s">&quot;Value validation failed - \(message)&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span> <span class="n">catch</span> <span class="k">let</span> <span class="n">error</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">XCTFail</span><span class="p">(</span><span class="s">&quot;Caught error: \(error) - \(message)&quot;</span><span class="p">,</span> <span class="nl">file</span><span class="p">:</span> <span class="n">file</span><span class="p">,</span> <span class="nl">line</span><span class="p">:</span> <span class="n">line</span><span class="p">)</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">&#x7d;</span>
+</div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">func</span> <span class="n">testSomething</span><span class="p">()</span> <span class="p">&#x7b;</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">XCTAssertNoThrowValidateValue</span><span class="p">(</span><span class="n">try</span> <span class="n">parseSomething</span><span class="p">())</span> <span class="p">&#x7b;</span> <span class="err">$</span><span class="mi">0</span> <span class="o">&gt;</span> <span class="mi">5</span> <span class="p">&#x7d;</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="p">&#x7d;</span></div></div></pre></div></figure>
+
+<p>This covers my use cases for now!</p>
+
+  </div><!-- /.entry-content -->
+</article><!-- /.hentry -->
+
+<article class="hentry">
+  <header>
+    
+    <div class="entry-meta">
       <span class="entry-date date published updated"><time datetime="2014-10-01T11:42:36+02:00"><a href="http://jernejstrasner.com/2014/10/01/nsfastenumeration-in-swift.html">October 01, 2014</a></time></span><span class="author vcard"><span class="fn"><a href="http://jernejstrasner.com/about/" title="About Jernej Strasner">Jernej Strasner</a></span></span>
       
       <span class="entry-reading-time">
