@@ -16,12 +16,12 @@ I resorted to `NSFileManager` and its method `enumeratorAtURL:includingPropertie
 It returns an `NSDirectoryEnumerator` object which supports `NSFastEnumeration`. That means you can use the for-in loop in Objective-C.
 Without thinking, I wrote a for-in loop in Swift. Not so fast.
 
-> Type ‘NSDirectoryEnumerator’ does not conform to protocol ‘SequenceType’.
+> Type `NSDirectoryEnumerator` does not conform to protocol `SequenceType`.
 
 Apple should have supported this. So I spent some time browsing trough the Swift headers and with the help of generics
 I wrote a custom substruct (?) that conforms to the `GeneratorType` protocol and can be initialized with an object of type `NSEnumerator`.
 
-{% codeblock lang:swift %}
+```swift
 public struct GenericGenerator<T> : GeneratorType, SequenceType {
   let enumerator: NSEnumerator
   
@@ -37,17 +37,17 @@ public struct GenericGenerator<T> : GeneratorType, SequenceType {
     return GenericGenerator<T>(self.enumerator)
   }
 }
-{% endcodeblock %}
+```
 
 In my case I was dealing with `NSDirectoryEnumerator` which iterates trough `NSURL` objects. So I wrote an extension to extend it with support for `SequenceType`.
 The nice thing is that using for-in in Swift now provides you with `NSURL` objects!
 
-{% codeblock lang:swift %}
+```swift
 extension NSDirectoryEnumerator : SequenceType {
   public func generate() -> GenericGenerator<NSURL> {
     return GenericGenerator<NSURL>(self)
   }
 }
-{% endcodeblock %}
+```
 
 This generic can now be used to extend any kind of `NSEnumerator` so you can enjoy clean for-in loops in Swift.

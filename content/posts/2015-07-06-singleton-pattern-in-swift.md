@@ -24,7 +24,7 @@ Trivial, if it’s not a singleton. My first idea was to write it the exact same
 I came across a major difference right away; static variables can only be declared inside enums and structs.
 Luckily structs can be defined inside methods and, like in this case, property getters. So I came up with the code below:
 
-{% codeblock lang:objc %}
+```swift
 class MyClass {
     class var sharedInstance: MyClass {
         struct Singleton {
@@ -37,7 +37,7 @@ class MyClass {
         return Singleton.instance!
     }
 }
-{% endcodeblock %}
+```
 
 Works, great!
 
@@ -49,7 +49,7 @@ Then I found this post by Joe Groff (@jckarter) who works on the Swift compiler:
 This is getting better and better! He says there are two options, one with a global variable and one with a static let as the property of a struct.
 I’m not a fan of polluting the global space too much so I chose the latter:
 
-{% codeblock lang:objc %}
+```swift
 class MyClass {
     class var sharedInstance: MyClass {
         struct Singleton {
@@ -58,7 +58,7 @@ class MyClass {
         return Singleton.instance
     }
 }
-{% endcodeblock %}
+```
 
 Much nicer!
 
@@ -68,10 +68,10 @@ I’m sticking to this implementation for now.
 
 __Update__: Swift 1.2 added support for static properties on classes so now a singleton can be simply initialized when declaring the property. No more embedded structs!
 
-{% codeblock lang:objc %}
+```swift
 class MyClass {
     static let sharedInstance = MyClass()
 }
-{% endcodeblock %}
+```
 
 That’s it!

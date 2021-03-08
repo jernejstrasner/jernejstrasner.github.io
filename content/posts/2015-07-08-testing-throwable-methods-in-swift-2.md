@@ -18,7 +18,7 @@ but they're missing.
 
 So the first thing that comes to mind is to just wrap the asserts into do/catch blocks.
 
-{% codeblock lang:swift %}
+```swift
 func testSomething() {
     do {
         try XCTAssert(parseSomething() == "result")
@@ -26,14 +26,14 @@ func testSomething() {
         XCTFail("Parsing failed.")
     }
 }
-{% endcodeblock %}
+```
 
 And Xcode complains: _"Call can throw, but it is executed in a non-throwing autoclosure."_
 
 Assert macros use the `@autoclosure` attribute, so everything you pass to them becomes a closure. A non-throwing closure.
 So you need to first try to get the result and pass just that.
 
-{% codeblock lang:swift %}
+```swift
 func testSomething() {
     do {
         let result = try parseSomething()
@@ -42,11 +42,11 @@ func testSomething() {
         XCTFail("Parsing failed.")
     }
 }
-{% endcodeblock %}
+```
 
 This works. But, we hate repetition, don't we?
 
-{% codeblock lang:swift %}
+```swift
 func XCTAssertThrows<T>(@autoclosure expression: () throws -> T, _ message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     do {
         try expression()
@@ -67,11 +67,11 @@ func testSomething() {
     XCTAssertNoThrow(try parseSomething())
     XCTAssertThrow(try parseOtherThing())
 }
-{% endcodeblock %}
+```
 
 Good. We can check if a method throws or not. But some methods return things and we would like to compare these things to other things.
 
-{% codeblock lang:swift %}
+```swift
 func XCTAssertNoThrowEqual<T : Equatable>(@autoclosure expression1: () -> T, @autoclosure _ expression2: () throws -> T, _ message: String = "", file: String = __FILE__, line: UInt = __LINE__) {
     do {
         let result2 = try expression2()
@@ -84,11 +84,11 @@ func XCTAssertNoThrowEqual<T : Equatable>(@autoclosure expression1: () -> T, @au
 func testSomething() {
     XCTAssertNoThrowEqual("result", try parseSomething())
 }
-{% endcodeblock %}
+```
 
 Ok, that's equality. But what about >, < and membership checks? Let's add a validator closure then.
 
-{% codeblock lang:swift %}
+```swift
 func XCTAssertNoThrowValidateValue<T>(@autoclosure expression: () throws -> T, _ message: String = "", file: String = __FILE__, line: UInt = __LINE__, _ validator: (T) -> Bool) {
     do {
         let result = try expression()
@@ -101,6 +101,6 @@ func XCTAssertNoThrowValidateValue<T>(@autoclosure expression: () throws -> T, _
 func testSomething() {
     XCTAssertNoThrowValidateValue(try parseSomething()) { $0 > 5 }
 }
-{% endcodeblock %}
+```
 
 This covers my use cases for now!
