@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>testing on Jernej Strasner</title>
+    <link>http://jernejstrasner.com/tags/testing/</link>
+    <description>Recent content in testing on Jernej Strasner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Jernej Strasner</copyright>
+    <lastBuildDate>Wed, 08 Jul 2015 15:47:48 +0200</lastBuildDate><atom:link href="http://jernejstrasner.com/tags/testing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Testing Throwable Methods in Swift 2</title>
+      <link>http://jernejstrasner.com/posts/2015-07-08-testing-throwable-methods-in-swift-2/</link>
+      <pubDate>Wed, 08 Jul 2015 15:47:48 +0200</pubDate>
+      
+      <guid>http://jernejstrasner.com/posts/2015-07-08-testing-throwable-methods-in-swift-2/</guid>
+      <description>With the addition of error handling to Swift 2, we got a way to deal with errors with the nice try/catch exception handling syntax from many languages, but without the associated cost of stack unwinding.
+As with anything new, some questions come to mind. How do we test methods that can throw errors? In Objective-C we had a few XCTest assert macros to help with this, like XCTAssertThrows. Swift 1 does not support exceptions, so these macros, which get translated to Swift functions, are absent from the XCTest framework in Swift.</description>
+    </item>
+    
+  </channel>
+</rss>

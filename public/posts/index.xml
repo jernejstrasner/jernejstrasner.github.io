@@ -1,0 +1,250 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on Jernej Strasner</title>
+        <link>http://jernejstrasner.com/posts/</link>
+        <description>Recent content in Posts on Jernej Strasner</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <copyright>Jernej Strasner</copyright>
+        <lastBuildDate>Wed, 08 Jul 2015 15:47:48 +0200</lastBuildDate>
+        <atom:link href="http://jernejstrasner.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Testing Throwable Methods in Swift 2</title>
+            <link>http://jernejstrasner.com/posts/2015-07-08-testing-throwable-methods-in-swift-2/</link>
+            <pubDate>Wed, 08 Jul 2015 15:47:48 +0200</pubDate>
+            
+            <guid>http://jernejstrasner.com/posts/2015-07-08-testing-throwable-methods-in-swift-2/</guid>
+            <description>With the addition of error handling to Swift 2, we got a way to deal with errors with the nice try/catch exception handling syntax from many languages, but without the associated cost of stack unwinding.
+As with anything new, some questions come to mind. How do we test methods that can throw errors? In Objective-C we had a few XCTest assert macros to help with this, like XCTAssertThrows. Swift 1 does not support exceptions, so these macros, which get translated to Swift functions, are absent from the XCTest framework in Swift.</description>
+            <content type="html"><![CDATA[<p>With the addition of error handling to Swift 2, we got a way to deal with errors with the nice try/catch exception handling syntax from many languages,
+but without the associated cost of stack unwinding.</p>
+<p>As with anything new, some questions come to mind. How do we test methods that can throw errors? In Objective-C we had a few <code>XCTest</code> assert macros to help with this, like <code>XCTAssertThrows</code>. Swift 1 does not support exceptions, so these macros,
+which get translated to Swift functions, are absent from the <code>XCTest</code> framework in Swift. I was expecting to find them in the Swift 2 version of the framework,
+but they&rsquo;re missing.</p>
+<p>So the first thing that comes to mind is to just wrap the asserts into do/catch blocks.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">testSomething</span>() {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">try</span> XCTAssert(parseSomething() == <span style="color:#e6db74">&#34;result&#34;</span>)
+    } <span style="color:#66d9ef">catch</span> {
+        XCTFail(<span style="color:#e6db74">&#34;Parsing failed.&#34;</span>)
+    }
+}
+</code></pre></div><p>And Xcode complains: <em>&ldquo;Call can throw, but it is executed in a non-throwing autoclosure.&quot;</em></p>
+<p>Assert macros use the <code>@autoclosure</code> attribute, so everything you pass to them becomes a closure. A non-throwing closure.
+So you need to first try to get the result and pass just that.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">testSomething</span>() {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">let</span> result = <span style="color:#66d9ef">try</span> parseSomething()
+        XCTAssertEqual(<span style="color:#e6db74">&#34;result&#34;</span>, result)
+    } <span style="color:#66d9ef">catch</span> {
+        XCTFail(<span style="color:#e6db74">&#34;Parsing failed.&#34;</span>)
+    }
+}
+</code></pre></div><p>This works. But, we hate repetition, don&rsquo;t we?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">XCTAssertThrows</span>&lt;T&gt;(<span style="color:#66d9ef">@autoclosure</span> expression: () <span style="color:#66d9ef">throws</span> -&gt; T, <span style="color:#66d9ef">_</span> message: String = <span style="color:#e6db74">&#34;&#34;</span>, file: String = <span style="color:#66d9ef">__FILE__</span>, line: UInt = <span style="color:#66d9ef">__LINE__</span>) {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">try</span> expression()
+        XCTFail(<span style="color:#e6db74">&#34;No error to catch! - </span><span style="color:#e6db74">\(</span>message<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>, file: file, line: line)
+    } <span style="color:#66d9ef">catch</span> {
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">XCTAssertNoThrow</span>&lt;T&gt;(<span style="color:#66d9ef">@autoclosure</span> expression: () <span style="color:#66d9ef">throws</span> -&gt; T, <span style="color:#66d9ef">_</span> message: String = <span style="color:#e6db74">&#34;&#34;</span>, file: String = <span style="color:#66d9ef">__FILE__</span>, line: UInt = <span style="color:#66d9ef">__LINE__</span>) {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">try</span> expression()
+    } <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">let</span> error {
+        XCTFail(<span style="color:#e6db74">&#34;Caught error: </span><span style="color:#e6db74">\(</span>error<span style="color:#e6db74">)</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">\(</span>message<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>, file: file, line: line)
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">testSomething</span>() {
+    XCTAssertNoThrow(<span style="color:#66d9ef">try</span> parseSomething())
+    XCTAssertThrow(<span style="color:#66d9ef">try</span> parseOtherThing())
+}
+</code></pre></div><p>Good. We can check if a method throws or not. But some methods return things and we would like to compare these things to other things.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">XCTAssertNoThrowEqual</span>&lt;T : Equatable&gt;(<span style="color:#66d9ef">@autoclosure</span> expression1: () -&gt; T, <span style="color:#66d9ef">@autoclosure</span> <span style="color:#66d9ef">_</span> expression2: () <span style="color:#66d9ef">throws</span> -&gt; T, <span style="color:#66d9ef">_</span> message: String = <span style="color:#e6db74">&#34;&#34;</span>, file: String = <span style="color:#66d9ef">__FILE__</span>, line: UInt = <span style="color:#66d9ef">__LINE__</span>) {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">let</span> result2 = <span style="color:#66d9ef">try</span> expression2()
+        XCTAssertEqual(expression1, result2, message, file: file, line: line)
+    } <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">let</span> error {
+        XCTFail(<span style="color:#e6db74">&#34;Caught error: </span><span style="color:#e6db74">\(</span>error<span style="color:#e6db74">)</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">\(</span>message<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>, file: file, line: line)
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">testSomething</span>() {
+    XCTAssertNoThrowEqual(<span style="color:#e6db74">&#34;result&#34;</span>, <span style="color:#66d9ef">try</span> parseSomething())
+}
+</code></pre></div><p>Ok, that&rsquo;s equality. But what about &gt;, &lt; and membership checks? Let&rsquo;s add a validator closure then.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">XCTAssertNoThrowValidateValue</span>&lt;T&gt;(<span style="color:#66d9ef">@autoclosure</span> expression: () <span style="color:#66d9ef">throws</span> -&gt; T, <span style="color:#66d9ef">_</span> message: String = <span style="color:#e6db74">&#34;&#34;</span>, file: String = <span style="color:#66d9ef">__FILE__</span>, line: UInt = <span style="color:#66d9ef">__LINE__</span>, <span style="color:#66d9ef">_</span> validator: (T) -&gt; Bool) {
+    <span style="color:#66d9ef">do</span> {
+        <span style="color:#66d9ef">let</span> result = <span style="color:#66d9ef">try</span> expression()
+        XCTAssert(validator(result), <span style="color:#e6db74">&#34;Value validation failed - </span><span style="color:#e6db74">\(</span>message<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>, file: file, line: line)
+    } <span style="color:#66d9ef">catch</span> <span style="color:#66d9ef">let</span> error {
+        XCTFail(<span style="color:#e6db74">&#34;Caught error: </span><span style="color:#e6db74">\(</span>error<span style="color:#e6db74">)</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">\(</span>message<span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>, file: file, line: line)
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">testSomething</span>() {
+    XCTAssertNoThrowValidateValue(<span style="color:#66d9ef">try</span> parseSomething()) { $0 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">5</span> }
+}
+</code></pre></div><p>This covers my use cases for now!</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>NSFastEnumeration in Swift</title>
+            <link>http://jernejstrasner.com/posts/2015-07-06-nsfastenumeration-in-swift/</link>
+            <pubDate>Wed, 01 Oct 2014 11:42:36 +0200</pubDate>
+            
+            <guid>http://jernejstrasner.com/posts/2015-07-06-nsfastenumeration-in-swift/</guid>
+            <description>I spent the past few weeks digging into Swift while working on PSPDFKit. Today I was trying to enumerate a directory recursively. I resorted to NSFileManager and its method enumeratorAtURL:includingPropertiesForKeys:options:errorHandler:. It returns an NSDirectoryEnumerator object which supports NSFastEnumeration. That means you can use the for-in loop in Objective-C. Without thinking, I wrote a for-in loop in Swift. Not so fast.
+ Type NSDirectoryEnumerator does not conform to protocol SequenceType.
+ Apple should have supported this.</description>
+            <content type="html"><![CDATA[<p>I spent the past few weeks digging into Swift while working on PSPDFKit. Today I was trying to enumerate a directory recursively.
+I resorted to <code>NSFileManager</code> and its method <code>enumeratorAtURL:includingPropertiesForKeys:options:errorHandler:</code>.
+It returns an <code>NSDirectoryEnumerator</code> object which supports <code>NSFastEnumeration</code>. That means you can use the for-in loop in Objective-C.
+Without thinking, I wrote a for-in loop in Swift. Not so fast.</p>
+<blockquote>
+<p>Type <code>NSDirectoryEnumerator</code> does not conform to protocol <code>SequenceType</code>.</p>
+</blockquote>
+<p>Apple should have supported this. So I spent some time browsing trough the Swift headers and with the help of generics
+I wrote a custom substruct (?) that conforms to the <code>GeneratorType</code> protocol and can be initialized with an object of type <code>NSEnumerator</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">GenericGenerator</span>&lt;T&gt; : GeneratorType, SequenceType {
+  <span style="color:#66d9ef">let</span> enumerator: NSEnumerator
+  
+  <span style="color:#66d9ef">init</span>(<span style="color:#66d9ef">_</span> enumerator: NSEnumerator) {
+    <span style="color:#66d9ef">self</span>.enumerator = enumerator
+  }
+ 
+  <span style="color:#66d9ef">mutating</span> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">next</span>() -&gt; T? {
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">self</span>.enumerator.nextObject() <span style="color:#66d9ef">as</span> T?
+  }
+ 
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">generate</span>() -&gt; GenericGenerator&lt;T&gt; {
+    <span style="color:#66d9ef">return</span> GenericGenerator&lt;T&gt;(<span style="color:#66d9ef">self</span>.enumerator)
+  }
+}
+</code></pre></div><p>In my case I was dealing with <code>NSDirectoryEnumerator</code> which iterates trough <code>NSURL</code> objects. So I wrote an extension to extend it with support for <code>SequenceType</code>.
+The nice thing is that using for-in in Swift now provides you with <code>NSURL</code> objects!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">extension</span> <span style="color:#a6e22e">NSDirectoryEnumerator</span> : SequenceType {
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">generate</span>() -&gt; GenericGenerator&lt;NSURL&gt; {
+    <span style="color:#66d9ef">return</span> GenericGenerator&lt;NSURL&gt;(<span style="color:#66d9ef">self</span>)
+  }
+}
+</code></pre></div><p>This generic can now be used to extend any kind of <code>NSEnumerator</code> so you can enjoy clean for-in loops in Swift.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Singleton Pattern in Swift</title>
+            <link>http://jernejstrasner.com/posts/2015-07-06-singleton-pattern-in-swift/</link>
+            <pubDate>Sat, 07 Jun 2014 14:20:26 +0200</pubDate>
+            
+            <guid>http://jernejstrasner.com/posts/2015-07-06-singleton-pattern-in-swift/</guid>
+            <description>Like just about any other iOS developer, I was caught completely by surprise when Apple announced Swift. I was expecting modest improvements to Objective-C, maybe even an Objective-C 3.0 release, but nothing as wild as a new language. But I got excited, really excited, when I watched the state of the union video (no, I was not one of the lucky WWDC ticket lottery winners). I started reading the Swift book right away.</description>
+            <content type="html"><![CDATA[<p>Like just about any other iOS developer, I was caught completely by surprise when Apple announced Swift.
+I was expecting modest improvements to Objective-C, maybe even an Objective-C 3.0 release, but nothing as wild as a new language.
+But I got excited, really excited, when I watched the state of the union video (no, I was not one of the lucky WWDC ticket lottery winners).
+I started reading the Swift book right away. <em>“I’m going to read this trough first,”</em> I said to myself, <em>“and hack later.”</em>
+Well, guess what? I started hacking after the introduction chapter. After I alternated between reading and hacking for a while,
+I needed a project to work on. And so I chose to port <a href="https://github.com/jernejstrasner/JSImageLoader">JSImageLoader</a> to Swift and see how it goes.</p>
+<p><strong>Update</strong>: See the updated code for Swift 1.2 at the bottom of this post.</p>
+<p>The first thing I did was to outline classes and add properties. This was easy. The second step was to implement initializers.
+Trivial, if it’s not a singleton. My first idea was to write it the exact same way I would do it in Objective-C, using dispatch_once.
+I came across a major difference right away; static variables can only be declared inside enums and structs.
+Luckily structs can be defined inside methods and, like in this case, property getters. So I came up with the code below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span> {
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">var</span> sharedInstance: MyClass {
+        <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Singleton</span> {
+            <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">var</span> token : dispatch_once_t = <span style="color:#ae81ff">0</span>
+            <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">var</span> instance : MyClass?
+        }
+        dispatch_once(&amp;Singleton.token) {
+            Singleton.instance = MyClass()
+        }
+        <span style="color:#66d9ef">return</span> Singleton.instance!
+    }
+}
+</code></pre></div><p>Works, great!</p>
+<p>Then I read more of the book, watched some more WWDC videos and browsed more of the Apple developer forums.
+Then I found this post by Joe Groff (@jckarter) who works on the Swift compiler:</p>
+<blockquote>
+<p>Global and static properties are already dispatch_once’d, so there’s really no need for this. You can simply define the singleton instance as a global variable or static let property of a struct.</p>
+</blockquote>
+<p>This is getting better and better! He says there are two options, one with a global variable and one with a static let as the property of a struct.
+I’m not a fan of polluting the global space too much so I chose the latter:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span> {
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">var</span> sharedInstance: MyClass {
+        <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Singleton</span> {
+            <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">let</span> instance = MyClass()
+        }
+        <span style="color:#66d9ef">return</span> Singleton.instance
+    }
+}
+</code></pre></div><p>Much nicer!</p>
+<p>While I do agree that this could be made even nicer by having a private static class let property,
+I think that it’s great that global variables and static let properties are wrapped in dispatch_once.
+I’m sticking to this implementation for now.</p>
+<p><strong>Update</strong>: Swift 1.2 added support for static properties on classes so now a singleton can be simply initialized when declaring the property. No more embedded structs!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-swift" data-lang="swift"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span> {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">let</span> sharedInstance = MyClass()
+}
+</code></pre></div><p>That’s it!</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Smooth gradients on iOS/OSX</title>
+            <link>http://jernejstrasner.com/posts/2013-10-17-smooth-gradients-ios/</link>
+            <pubDate>Wed, 08 Jan 2014 23:00:00 +0000</pubDate>
+            
+            <guid>http://jernejstrasner.com/posts/2013-10-17-smooth-gradients-ios/</guid>
+            <description>UPDATE: Updated for Swift, Swift 2 and packaged into a drop-in replacement for UIView.
+I thought drawing gradients on iOS is easy. Well, until our designer gave me this:
+I went on and implemented the drawRect: method on a custom UIView. I used CGGradient and wrote the drawing code. I ran the project in the simulator and noticed that the gradient was quite different. Ran on the device, same thing.</description>
+            <content type="html"><![CDATA[<p><strong>UPDATE</strong>: Updated for Swift, Swift 2 and packaged into a <a href="https://github.com/jernejstrasner/Smooth-Gradient">drop-in replacement for UIView</a>.</p>
+<p>I thought drawing gradients on iOS is easy. Well, until our designer gave me this:</p>
+<p><img src="/images/2013-10-17/gradient_ps.png" alt="Smooth gradient drawn in Photoshop"></p>
+<p>I went on and implemented the <code>drawRect:</code> method on a custom UIView. I used <code>CGGradient</code> and wrote the drawing code. I ran the project in the simulator and noticed that the gradient was quite different. Ran on the device, same thing.</p>
+<p><img src="/images/2013-10-17/gradient_cg.png" alt="Gradient drawn with CGGradient"></p>
+<p>I played around with different colors and their positions but nothing turned out like the Photoshop gradient. After some head scratching I figured it must be something to do with how the colors are interpolated. <code>CGGradient</code> uses a linear interpolation of colors.</p>
+<p><img src="/images/2013-10-17/linear.png" alt="Plot y = x"></p>
+<p>What I need is a slope (ease-in ease-out for you familiar with animation timings) function and apply that to each color component. I actually cared only about transparency so I had to only adjust the alpha channel.
+I needed this:</p>
+<p><img src="/images/2013-10-17/slope_func.png" alt="Plot slope function"></p>
+<p><img src="/images/2013-10-17/slope.png" alt="Plot slope"></p>
+<p>Looking at the documentation, <code>CGGradient</code> doesn&rsquo;t support custom color interpolation. There is something called <code>CGShading</code> that does. The documentation is not absolutely clear on how to use it, but after some experimenting I came up with a solution, which is presented below. There is also a sample project available on <a href="https://github.com/jernejstrasner/Smooth-Gradient">GitHub</a> so you can compare CGGradient and CGShading.</p>
+<p>Hope somebody finds this useful!</p>
+<script type="application/javascript" src="https://gist.github.com/jernejstrasner/6319645344d17e7df8aa.js"></script>
+
+]]></content>
+        </item>
+        
+        <item>
+            <title>The ternary operator in C</title>
+            <link>http://jernejstrasner.com/posts/2013-07-24-c-ternary-operator/</link>
+            <pubDate>Wed, 24 Jul 2013 12:58:00 +0000</pubDate>
+            
+            <guid>http://jernejstrasner.com/posts/2013-07-24-c-ternary-operator/</guid>
+            <description>Most programmers are familiar with the ternary operator ?: that is available in C and most other languages. But what some people may not know is that you can also use this operator with only two arguments.
+Instead of writing
+int y = 23; int x = (y ? y : 34); you can do this
+int y = 23; int x = (y ?: 34); The other thing some of you may not know is that when defining a const you can&amp;rsquo;t use an if statement to define it based on a condition, but you can do this:</description>
+            <content type="html"><![CDATA[<p>Most programmers are familiar with the ternary operator <a href="http://en.wikipedia.org/wiki/%3F:#C">?:</a> that is available in C and most other languages.
+But what some people may not know is that you can also use this operator with only two arguments.</p>
+<p>Instead of writing</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> <span style="color:#ae81ff">23</span>;
+<span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> (y <span style="color:#f92672">?</span> y : <span style="color:#ae81ff">34</span>);
+</code></pre></div><p>you can do this</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> <span style="color:#ae81ff">23</span>;
+<span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> (y <span style="color:#f92672">?:</span> <span style="color:#ae81ff">34</span>);
+</code></pre></div><p>The other thing some of you may not know is that when defining a const you can&rsquo;t use an if statement to define it based on a condition, but you can do this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> <span style="color:#ae81ff">23</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> (y <span style="color:#f92672">?:</span> <span style="color:#ae81ff">34</span>);
+</code></pre></div><p>That&rsquo;s it for the first post!</p>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>

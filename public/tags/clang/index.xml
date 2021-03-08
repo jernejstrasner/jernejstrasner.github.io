@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>clang on Jernej Strasner</title>
+    <link>http://jernejstrasner.com/tags/clang/</link>
+    <description>Recent content in clang on Jernej Strasner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Jernej Strasner</copyright>
+    <lastBuildDate>Wed, 24 Jul 2013 12:58:00 +0000</lastBuildDate><atom:link href="http://jernejstrasner.com/tags/clang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The ternary operator in C</title>
+      <link>http://jernejstrasner.com/posts/2013-07-24-c-ternary-operator/</link>
+      <pubDate>Wed, 24 Jul 2013 12:58:00 +0000</pubDate>
+      
+      <guid>http://jernejstrasner.com/posts/2013-07-24-c-ternary-operator/</guid>
+      <description>Most programmers are familiar with the ternary operator ?: that is available in C and most other languages. But what some people may not know is that you can also use this operator with only two arguments.
+Instead of writing
+int y = 23; int x = (y ? y : 34); you can do this
+int y = 23; int x = (y ?: 34); The other thing some of you may not know is that when defining a const you can&amp;rsquo;t use an if statement to define it based on a condition, but you can do this:</description>
+    </item>
+    
+  </channel>
+</rss>
