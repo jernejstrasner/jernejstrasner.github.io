@@ -11,7 +11,7 @@ paginate = 10
   dateformNumTime = "2006-01-02 15:04"
 
   # Subtitle for home
-  homeSubtitle = "A personal website"
+#   homeSubtitle = "A personal website"
 
   # Set disableReadOtherPosts to true in order to hide the links to other posts.
   disableReadOtherPosts = false
@@ -31,12 +31,12 @@ paginate = 10
 
 [languages]
   [languages.en]
-    subtitle = "A personal website"
-    copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+    # subtitle = "A personal website"
+    copyright = 'Jernej Strasner'
     readOtherPosts = "Read other posts"
 
     [languages.en.params.logo]
-      logoText = "jernej strasner"
+      logoText = "jernej"
       logoHomeLink = "/"
     # or
     #
@@ -48,3 +48,11 @@ paginate = 10
     identifier = "posts"
     name       = "Posts"
     url        = "/posts"
+  [[menu.main]]
+    identifier = "linkedin"
+    name       = "LinkedIn"
+    url        = "https://www.linkedin.com/in/jernejstrasner/"
+  [[menu.main]]
+    identifier = "twitter"
+    name       = "Twitter"
+    url        = "https://twitter.com/JernejStrasner/"
